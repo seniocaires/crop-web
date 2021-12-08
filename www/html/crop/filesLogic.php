@@ -6,10 +6,7 @@
 if (isset($_POST['save'])) { // if save button on the form is clicked
     // name of the uploaded file
     $uuid = guidv4();
-    echo "UUID:".$uuid."<br/>";
     mkdir('uploads/'.$uuid, 0755, true);
-    echo "NAME:".$_FILES['myfile']['name']."<br/>";
-    echo "TMP_NAME:".$_FILES['myfile']['tmp_name']."<br/>";
     $filename = $_FILES['myfile']['name'];
 
     // destination of the file on the server
@@ -22,18 +19,25 @@ if (isset($_POST['save'])) { // if save button on the form is clicked
     // the physical file on a temporary uploads directory on the server
     $file = $_FILES['myfile']['tmp_name'];
     $size = $_FILES['myfile']['size'];
+    $parts_size = $_POST['parts_size'];
+    $position = $_POST['position'];
+
+    if($parts_size > 20 || $parts_size < 1) {
+        echo "Invalid size";
+    }
+
+    if($position > 3 || $parts_size < 0) {
+        echo "Invalid position";
+    }
 
     if (!in_array($extension, ['jpg', 'png', 'jpeg'])) {
         echo "You file extension must be .jpg, .png or .jpeg";
     } elseif ($_FILES['myfile']['size'] > 1000000) { // file shouldn't be larger than 1Megabyte
         echo "File too large!";
     } else {
-        echo "FILE:".$file."<br/>";
-        echo "DESTINATION:".$destination."<br/>";
         // move the uploaded (temporary) file to the specified destination
         if (move_uploaded_file($file, $destination)) {
-            echo "UPLOADED";
-            $result = shell_exec('/bin/bash /var/www/crop 10 2 '.$destination.' /var/www/html/uploads/'.$uuid);
+            $result = shell_exec('/bin/bash /var/www/crop '.$parts_size.' '.$position.' '.$destination.' /var/www/html/crop/uploads/'.$uuid);
             echo $result;
             // $sql = "INSERT INTO files (name, size, downloads) VALUES ('$filename', $size, 0)";
             // if (mysqli_query($conn, $sql)) {

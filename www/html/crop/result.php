@@ -11,9 +11,9 @@
 <tbody>
   <?php foreach ($images as $key => $image): ?>
     <tr>
-      <td><?php echo $key; ?></td>
+      <td><?php echo (sizeof($images) - $key); ?></td>
       <td>
-        <a href="<?php echo $image; ?>" download="file-<?php echo $key.'__'.date("Y-m-d_H-i-s");?>">
+        <a href="<?php echo $image; ?>" download="file-<?php echo (sizeof($images) - $key).'__'.date("Y-m-d_H-i-s");?>">
           <img src="<?php echo $image; ?>" alt="file">
         </a>  
       </td>
