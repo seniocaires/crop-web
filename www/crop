@@ -1,0 +1,57 @@
+#!/bin/bash
+
+BLOCKS=${1:-4}
+START_POSITION=${2:-0}
+ORIGINAL_FILE=${3:-"/var/www/html/uploads/file"}
+DESTINY_FOLDER=${4:-"/var/www/html/uploads"}
+
+WIDTH=$(convert ${ORIGINAL_FILE} -print "%w" /dev/null);
+HEIGHT=$(convert ${ORIGINAL_FILE} -print "%h" /dev/null);
+
+width_block=$((WIDTH / BLOCKS))
+height_block=$((HEIGHT / BLOCKS))
+position="+0+0"
+
+if [ $START_POSITION -eq 0 ];then
+    gravity="NorthWest"
+fi
+
+if [ $START_POSITION -eq 1 ];then
+    gravity="NorthEast"
+fi
+
+if [ $START_POSITION -eq 2 ];then
+    gravity="SouthWest"
+fi
+
+if [ $START_POSITION -eq 3 ];then
+    gravity="SouthEast"
+fi
+
+
+echo "Original file size ${WIDTH}x${HEIGHT}"
+echo "It will cropped in ${BLOCKS} blocks"
+echo "Cutting in ${width_block}x${height_block} ascending blocks"
+echo "Start position ${position}"
+
+#mkdir -p result/
+##rm -rf result/*
+
+for counter in $(seq 1 ${BLOCKS}); do
+
+    width_to_crop=$(($width_block*$counter))
+    height_to_crop=$(($height_block*$counter))
+    # file_number=$(( BLOCKS - counter + 1))
+    file_number=$counter
+
+    if [ $file_number -lt 10 ];then
+        file_number="0${file_number}" 
+    fi
+
+    echo "Cropping file ${counter}"
+    convert ${ORIGINAL_FILE} -gravity ${gravity} -crop ${width_to_crop}x${height_to_crop}${position} ${DESTINY_FOLDER}/file-${file_number}.jpg
+    convert ${DESTINY_FOLDER}/file-${file_number}.jpg -background black -gravity ${gravity} -extent ${WIDTH}x${HEIGHT} ${DESTINY_FOLDER}/file-${file_number}.jpg
+
+done
+
+
