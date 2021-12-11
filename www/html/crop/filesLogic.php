@@ -14,7 +14,7 @@ if (isset($_POST['save'])) { // if save button on the form is clicked
     
     // get the file extension
     $extension = pathinfo($filename, PATHINFO_EXTENSION);
-    $destination = 'uploads/' .$uuid .'/' . $filename;
+    $destination = 'uploads/' .$uuid .'/' . $uuid;
 
     // the physical file on a temporary uploads directory on the server
     $file = $_FILES['myfile']['tmp_name'];
